@@ -1,0 +1,36 @@
+RTMILK-NCURSES
+==============
+
+Organization
+------------
+
+rtmilk-ncurses.py
+
+display/
+  __init__.py
+
+rtmapi/
+  __init__.py
+
+rtmcurses/
+  __init__.py
+
+
+Behaviour
+---------
+
+# view ? panel ? channel ?
+# display.FunView => display.views.fun() ?
+  display.switchView("name")
+  display.switchView(pos)
+  display.switchViewLast() # pos=-1 ?
+  display.switchViewFirst() # pos=0 ?
+  display.addView("name", flow, pos=-1) # name == flow.name ?
+  display.removeView(pos)
+  display.removeView("name")
+  display.moveView(oldpos, newpos)
+  display.moveView("name", newpos)
+  display.focusEntryLine()
+  display.clearCurrentView()
+  display.refreshCurrentView()
+
