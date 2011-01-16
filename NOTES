@@ -23,9 +23,9 @@ Behaviour
 # display.FunView => display.views.fun() ?
   display.switchView("name")
   display.switchView(pos)
-  display.switchViewLast() # pos=-1 ?
-  display.switchViewFirst() # pos=0 ?
-  display.addView("name", flow, pos=-1) # name == flow.name ?
+  display.switchViewLast()                # pos=-1 ?
+  display.switchViewFirst()               # pos=0 ?
+  display.addView("name", flow, pos=-1)	  # name == flow.name ?
   display.removeView(pos)
   display.removeView("name")
   display.moveView(oldpos, newpos)
