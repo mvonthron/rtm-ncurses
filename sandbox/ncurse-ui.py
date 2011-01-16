@@ -28,7 +28,7 @@ def main(stdscr):
   statusbar_win = make_statusbar()
   statusbar_win.refresh()
   
-  time.sleep(5)
+  time.sleep(8)
 
 
 
