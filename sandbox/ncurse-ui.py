@@ -40,7 +40,7 @@ def make_statusbar():
   
   win.bkgdset(ord(' '), curses.color_pair(2))
   win.insertln()
-  win.addstr(0, 1, '(status) [1] overview')
+  win.addstr(0, 1, '(connected) [1] overview [2] work [3] system')
 
   return win
 
@@ -56,6 +56,7 @@ def make_inputbar():
   win.insertln()
   win.addstr('[channel] ')
   
+  win.nodelay(0)
   win.timeout(0)
   
   curses.curs_set(1)
@@ -103,9 +104,14 @@ def main(stdscr):
       inputbar_win.addch(chr(ch))
       input_buffer += chr(ch)
     elif ch == curses.KEY_BACKSPACE or ch == curses.ascii.BS or ch == curses.ascii.DEL:
-      inputbar_win.addstr("<DEL>")
+      inputbar_win.delch(inputbar_win.getyx()[0], inputbar_win.getyx()[1]-1)
+      input_buffer = input_buffer[:-1]
     elif ch == curses.ascii.TAB:
       inputbar_win.addstr("<TAB>")
+    elif ch == curses.ascii.NAK:  #CTRL+U
+      inputbar_win.addstr("<CTRL+U>")
+    elif ch == curses.ascii.ESC:
+      inputbar_win.addstr("<ESC>")
     elif ch == curses.ascii.NL or ch == curses.KEY_ENTER:
       inputbar_win.erase()
       inputbar_win.addstr('[channel] ')
@@ -115,9 +121,9 @@ def main(stdscr):
       content_win.refresh()
       
       input_buffer = ""
-    else:
-      inputbar_win.addch(curses.ascii.ctrl(ch))
-    
+    elif curses.ascii.isctrl(ch):
+      inputbar_win.addstr("<CTRL> %d [%s]" % (ch, curses.unctrl(ch)))
+        
     inputbar_win.refresh()
   
   time.sleep(8)
