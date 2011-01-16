@@ -3,6 +3,7 @@
 import os
 import time
 import curses
+import curses.ascii
 
 
 
@@ -66,7 +67,6 @@ def make_contentwin():
   
   win.bkgdset(ord(' '), curses.color_pair(1))
   win.insertln()
-  win.addstr('< content >')
 
   return win
   
@@ -89,6 +89,9 @@ def main(stdscr):
   inputbar_win = make_inputbar()
   inputbar_win.refresh()  
   
+  # main input buffer
+  input_buffer = ""
+  
   while True:
     # move to own thread
     time.sleep(0.01)
@@ -96,8 +99,25 @@ def main(stdscr):
     
     if(-1 == ch):
       continue
+    elif(curses.ascii.isprint(ch)):
+      inputbar_win.addch(chr(ch))
+      input_buffer += chr(ch)
+    elif ch == curses.KEY_BACKSPACE or ch == curses.ascii.BS or ch == curses.ascii.DEL:
+      inputbar_win.addstr("<DEL>")
+    elif ch == curses.ascii.TAB:
+      inputbar_win.addstr("<TAB>")
+    elif ch == curses.ascii.NL or ch == curses.KEY_ENTER:
+      inputbar_win.erase()
+      inputbar_win.addstr('[channel] ')
       
-    inputbar_win.addch(chr(ch))
+      input_buffer += "\n"
+      content_win.addstr(input_buffer)
+      content_win.refresh()
+      
+      input_buffer = ""
+    else:
+      inputbar_win.addch(curses.ascii.ctrl(ch))
+    
     inputbar_win.refresh()
   
   time.sleep(8)
