@@ -8,10 +8,9 @@ import curses.ascii
 import time
 import threading
 
-class InputLine(object):
+class InputLine(threading.Thread):
   
-  _listening_thread = None
-  _listening_stop = False
+  stopflag = False
   
   # input buffer
   input_buffer = ""
@@ -30,47 +29,43 @@ class InputLine(object):
     self.win.timeout(0)
     
     curses.curs_set(1)
-    
     self.win.refresh()
 
 
-  # thread related methods
-  def listen(self, decision=True):
-    """start listening thread on input line
-    if arg 'decision' set to False, the thread is stopped (if any)
-    
-    """
-    if decision is True:
-      """start listening tread"""
-      self._listening_stop = False
-      self._listening_thread = threading.Thread(target=self._listen_task)
-      self._listening_thread.start()
-      
-    elif _listening_thread.is_alive():
-      """stop listening thread"""
-      self._listening_stop = True
-
-
-  def _listen_task(self):
+  def listen(self):
     """main listening routine
     listen to char entered by user with getch()
     """
-    while self._listening_stop is not True:
+    
+    while not self.stopflag:
       time.sleep(0.01)
       ch = self.win.getch()
       
-      if -1 != ch:
-        self.handle(ch)
-        
+      if(-1 != ch):
+        buffer = self.handle(ch)
+        if buffer:
+          return buffer
+    
+  
   def handle(self, ch):
     need_refresh = False
     
     if ord('q') == ch:
-      self._listening_stop = True
+      self.stop()
     
     if curses.ascii.isprint(ch):      
       self.win.addch(chr(ch))
+      self.input_buffer+= chr(ch)
       need_refresh = True
-    
+    elif ch == curses.ascii.NAK:  #CTRL+U
+      self.win.erase()
+      self.input_buffer = ""
+      need_refresh = True
+    elif ch == curses.ascii.NL or ch == curses.KEY_ENTER:
+      return self.input_buffer
+      
     if need_refresh:
       self.win.refresh()
+
+  def stop(self):
+    self.stopflag = True

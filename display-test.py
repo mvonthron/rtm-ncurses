@@ -10,6 +10,5 @@ def main(stdscr):
   display = Display(stdscr)
 
 
-
 if __name__ == '__main__':
   curses.wrapper(main)

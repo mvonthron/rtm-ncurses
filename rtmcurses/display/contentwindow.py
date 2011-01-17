@@ -8,9 +8,16 @@ import curses
 
 class ContentWindow:
   def __init__(self):
-    self = curses.newwin(curses.LINES-5, curses.COLS, 1, 0)
+    self.win = curses.newwin(curses.LINES-5, curses.COLS, 1, 0)
     
-    self.bkgdset(ord(' '), curses.color_pair(1))
-    self.insertln()
+    self.win.bkgdset(ord(' '), curses.color_pair(1))
+    self.win.insertln()
 
+    self.win.refresh()
+
+  def refresh(self):
+    self.win.refresh()
+
+  def println(self, msg):
+    self.win.addstr(msg+'\n')
     self.refresh()

@@ -25,7 +25,9 @@ class Display(object):
     self.contentwin = ContentWindow()
     self.statusline = StatusLine()
     self.inputline = InputLine()
-    self.inputline.listen()
+    while not self.inputline.stopflag:
+      input = self.inputline.listen()
+      self.contentwin.println(input)
   
   def init_colors(self):
     curses.start_color()
@@ -33,3 +35,5 @@ class Display(object):
     
     curses.init_pair(1, curses.COLOR_WHITE, -1)
     curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_BLUE)
+
+
