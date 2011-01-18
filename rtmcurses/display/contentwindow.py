@@ -15,9 +15,14 @@ class ContentWindow:
 
     self.win.refresh()
 
+  def clear(self):
+    self.win.addstr("<<< CLEAR >>>")
+    self.refresh()
+    
   def refresh(self):
     self.win.refresh()
 
-  def println(self, msg):
-    self.win.addstr(msg+'\n')
-    self.refresh()
+  def println(self, msg=None):
+    if msg is not None:
+      self.win.addstr(msg+"\n")
+      self.refresh()

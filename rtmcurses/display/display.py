@@ -25,9 +25,7 @@ class Display(object):
     self.contentwin = ContentWindow()
     self.statusline = StatusLine()
     self.inputline = InputLine()
-    while not self.inputline.stopflag:
-      input = self.inputline.listen()
-      self.contentwin.println(input)
+    self.inputline.set_prefix("channel")
   
   def init_colors(self):
     curses.start_color()
