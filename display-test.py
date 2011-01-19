@@ -9,6 +9,8 @@ from rtmcurses.display.display import Display
 def main(stdscr):
   display = Display(stdscr)
   
+  display.contentwin.writetask()
+  
   while not display.inputline.stopflag:
     input = display.inputline.listen()
     if input == "/quit":

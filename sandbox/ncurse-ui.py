@@ -13,6 +13,8 @@ def init_colors():
   
   curses.init_pair(1, curses.COLOR_WHITE, -1)
   curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_BLUE)
+  curses.init_pair(3, curses.COLOR_WHITE, curses.COLOR_CYAN)
+  curses.init_pair(4, curses.COLOR_WHITE, curses.COLOR_GREEN)
 
 
 def make_titlebar():
