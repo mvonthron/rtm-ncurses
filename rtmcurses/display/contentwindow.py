@@ -57,7 +57,7 @@ class ContentWindow:
     self.win.addch(' ', curses.color_pair(1))
     self.win.addch(curses.ACS_DIAMOND)
     self.win.addch(' ')
-    self.win.addstr(date, curses.COLOR_BLUE)
+    self.win.addstr(date, curses.COLOR_RED)
     
     # description
     desc = description.split('\n')
