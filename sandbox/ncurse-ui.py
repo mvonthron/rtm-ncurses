@@ -6,6 +6,10 @@ import curses
 import curses.ascii
 
 
+_x = None
+_y = None
+width  = None
+height = None
 
 def init_colors():
   curses.start_color()
@@ -65,24 +69,65 @@ def make_inputbar():
   
   return win
 
-def make_contentwin():
-  win = curses.newwin(curses.LINES-5, curses.COLS, 1, 0)
+#
+def populate(win):
+  global height, width
+  del win
+  win = make_contentwin(height, 2*width)
   
-  win.bkgdset(ord(' '), curses.color_pair(1))
-  win.insertln()
+  text1 = """This is window 1
+This is a very very long line roizaeurpoezaiurpzaoieurapoze aprzothqsdkjhfamozierupazoeiur pourh lskfhqs
 
+But not too much
+
+      no?
+      
+ok then
+"""
+
+  text2 = """This is window 2
+And another line 
+
+and another...
+"""
+
+  #populate 1
+  i=0
+  for l in text1.split('\n'):
+    win.addstr(i, 0, l)
+    i += 1
+  
+  #populate 2
+  i=0
+  for l in text2.split('\n'):
+    win.addstr(i, width, l)
+    i += 1
+  
+  return win
+
+#
+def make_contentwin(h, w):
+  win = curses.newpad(h, w)
+  
   return win
   
 def main(stdscr):
+  global _x, _y, width, height
+  
   init_colors()
+  
+  _x = 0
+  _y = 0
+  width  = curses.COLS
+  height = curses.LINES-5
   
   # titlebar
   titlebar_win = make_titlebar()
   titlebar_win.refresh()
   
   # content window
-  content_win = make_contentwin()
-  content_win.refresh()
+  content_win = make_contentwin(height, width)
+  content_win.refresh(_y, _x, 1, 0, height-1, width-1)
   
   # statusbar
   statusbar_win = make_statusbar()
@@ -120,9 +165,17 @@ def main(stdscr):
       inputbar_win.erase()
       inputbar_win.addstr('[channel] ')
       
-      input_buffer += "\n"
-      content_win.addstr(input_buffer)
-      content_win.refresh()
+      if input_buffer == "populate":
+        content_win = populate(content_win)
+      elif input_buffer == "next":
+        _x = width
+      elif input_buffer == "prev":
+        _x = 0
+      else:
+        input_buffer += "\n"
+        content_win.addstr(input_buffer)
+      
+      content_win.refresh(_y, _x, 1, 0, height-1, width-1)
       
       input_buffer = ""
     elif curses.ascii.isctrl(ch):
