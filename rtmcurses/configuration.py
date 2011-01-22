@@ -4,5 +4,5 @@
 # the terms of the BSD license
 
 history_size=20
-window_height=200
+max_view_height=200
 

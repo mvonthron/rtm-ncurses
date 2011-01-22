@@ -4,6 +4,7 @@
 # the terms of the BSD license
 
 import curses
+from collections import namedtuple
 
 from titleline import TitleLine
 from contentwindow import ContentWindow
@@ -11,6 +12,8 @@ from statusline import StatusLine
 from inputline import InputLine
 
 from rtmcurses import configuration
+
+View = namedtuple('View', 'x, y, buffer')
 
 """
 Display controller of RTM-ncurses
@@ -21,18 +24,26 @@ class Display(object):
     self._stdscr = stdscr
     self.init_colors()
     
+    # views
+    self.views       = {
+      'default': View(0, 0, "Window 0\n default"),
+    }
+    self.positions   = ['default']
+    self.curr_viewid = 0
+    self.nb_views    = 1
+    
+    # screen variables
+    self.view_h     = curses.LINES-5
+    self.view_width = curses.COLS
+    self.pad_height = configuration.max_view_height
+    self.pad_width  = self.nb_views*self.view_width
+    
     # curses windows creation
     self.titleline  = TitleLine()
     self.contentwin = ContentWindow()
     self.statusline = StatusLine()
     self.inputline  = InputLine()
     self.inputline.set_prefix("channel")
-    
-    #
-    self.positions   = []
-    self.views       = {}
-    self.curr_viewid = 0
-    self.nb_views    = 1
     
   
   def init_colors(self):
@@ -50,9 +61,26 @@ class Display(object):
     """Add a view to the display.
     if pos is none: placed at the end
     """
-    pass
+    if name in self.views:
+      raise Exception("Invalid name")
+    
+    self.views[name] = View(self.nb_views*curses.COLS, 0, buffer)
+    self.nb_views = len(self.views)
+    self.pad_width += self.view_width
+    self.contentwin.resize_pad(self.pad_width, self.pad_height)
+
+    if not pos is None and isinstance(pos, int):
+      self.positions.insert(pos, name)
+    else:
+      self.positions.append(name)
+
+    # something cleaner ?
+    self.contentwin.fillFromViews(self.views)
+
 
   def removeView(self, name):
+    """remove view"""
+    
     if isinstance(name, str):
       pass # remove from name
     elif isinstance(name, int):
@@ -61,10 +89,19 @@ class Display(object):
       raise Exception()
     
   def swapViews(self, view1, view2):
+    """swap views"""
     pass
-    
-  def switchToView(self, name):
-    pass
+  
+  def switchToView(self, view):
+    """switch active view"""
+    if isinstance(view, int):
+      view = self.positions[view]
+      
+    if isinstance(view, str):
+      self.contentwin.refresh(self.views[view].x, self.views[view].y)
+      self.curr_viewid = self.positions.index(view)
+    else:
+      raise Exception()
 
   def next(self):
     """switch to next view: manage contentwin as well as status, etc."""

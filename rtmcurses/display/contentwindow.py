@@ -4,19 +4,19 @@
 # the terms of the BSD license
 
 import curses
+import display
 
 class ContentWindow:
-  
   def __init__(self):
     self._x = 0
     self._y = 0
     
-    self.view_width  = curses.COLS
     self.view_height = curses.LINES-5
-    self.total_width  = 2*curses.COLS
-    self.total_height = curses.LINES-5
+    self.view_width  = curses.COLS
+    self.pad_height  = curses.LINES-5
+    self.pad_width   = curses.COLS
     
-    self.win = curses.newpad(self.total_height, self.total_width)
+    self.win = curses.newpad(self.pad_height, self.pad_width)
     
     self.win.bkgdset(ord(' '), curses.color_pair(1))
     self.win.insertln()
@@ -27,8 +27,24 @@ class ContentWindow:
     self.win.addstr("<<< CLEAR >>>")
     self.refresh()
   
-  def refresh(self):
-    self.win.refresh( self._y,self._x, 1,0, self.view_height-1,self.view_width-1 )
+  def refresh(self, view_x=None, view_y=None):
+    if view_x is None and view_y is None:
+      self.win.refresh( self._y,self._x, 1,0, self.view_height-1,self.view_width-1 )
+    else:
+      self.win.refresh( view_y, view_x, 1,0, self.view_height-1, self.view_width-1 )
+
+  def resize(self, _w, _h):
+    pass
+
+  def resize_pad(self, width=None, height=None):
+    if not width is None:
+      self.pad_width = width
+    if not height is None:
+      self.pad_height = height
+    
+    del self.win
+    self.win = curses.newpad(self.pad_height, self.pad_width)
+
 
   def writetask(self):
     """test composite drawing of task"""
@@ -100,6 +116,20 @@ class ContentWindow:
     
     self.refresh()
 
+  def fillFromViews(self, views):
+    self.win.erase()
+    
+    for v in views.itervalues():
+      if not isinstance(v, display.View):
+        raise Exception("invalid argument")
+        
+      row = v.y
+      for line in v.buffer.split('\n'):
+        self.win.addstr(row, v.x, line)
+        row += 1
+
+    self.refresh()
+  
   def next(self):
     self._x = self.view_width
     self.refresh()
