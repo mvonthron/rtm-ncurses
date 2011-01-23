@@ -14,10 +14,22 @@ class StatusLine:
 
     The status bar lists available channels
     """
-    self = curses.newwin(1, curses.COLS, curses.LINES-2, 0)
+    self.win = curses.newwin(1, curses.COLS, curses.LINES-2, 0)
 
-    self.bkgdset(ord(' '), curses.color_pair(2))
-    self.insertln()
-    self.addstr(0, 1, '(connected) [1] overview [2] work [3] system')
+    self.win.bkgdset(ord(' '), curses.color_pair(2))
+    self.win.insertln()
+    
+    self.status = "sleeping"
   
+    self.refresh()
+
+  def refresh(self):
+    self.win.refresh()
+
+  def fillFromViewlist(self, viewlist):
+    self.win.erase()
+    
+    self.win.addstr("(%s) " % self.status)
+    self.win.addstr(' '.join(["[%d] %s" % (i, name) for i, name in enumerate(viewlist)]))
+
     self.refresh()

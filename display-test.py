@@ -17,46 +17,57 @@ def main(stdscr):
   code = locale.getpreferredencoding()
   
   display = Display(stdscr)
+  
   #display.contentwin.writetask()
   #display.contentwin.writetask2()
   
   while not display.inputline.stopflag:
     input = display.inputline.listen()
+    
     if input == "/quit":
       display.inputline.stop()
       
-    elif input.startswith("set prefix "):
-      display.inputline.set_prefix(input.lstrip("set prefix "))
-      
+    elif input.startswith("/rename "):
+      display.setName(input[8:])
+    
+    #elif input.startswith("/move "):
+      #display.swapViews(input.split()[1])
+    
     #~ elif input.startswith('/'):
       #~ SystemParser.parser(input, display)
       
     elif input == "/next":
       display.next()
-    
-    elif input == "/add":
-      logging.debug("pre add view :\n  %s - %s" % (display.views, display.positions))
-      logging.debug("  view: %d, %d  pad: %d, %d" % (display.contentwin.view_width, display.contentwin.view_height, display.contentwin.pad_width, display.contentwin.pad_height))
+  
+    elif input.startswith("/add "):
+      title = input[5:].split()[0]
+      if len(input.split()) > 2:
+        content = ' '.join(input.split()[2:])
+      else:
+        content = ''
       
-      display.addView('system', buffer="Window 1\n  system")
-      
-      logging.debug("post add view :\n  %s - %s" % (display.views, display.positions))
-      logging.debug("  view: %d, %d  pad: %d, %d" % (display.contentwin.view_width, display.contentwin.view_height, display.contentwin.pad_width, display.contentwin.pad_height))
-      
-      
-      display.addView('overview', buffer="Window 2\n overview")
-      
-      logging.debug("post add view :\n  %s - %s" % (display.views, display.positions))
-      logging.debug("  view: %d, %d  pad: %d, %d" % (display.contentwin.view_width, display.contentwin.view_height, display.contentwin.pad_width, display.contentwin.pad_height))
+      display.addView(title, buffer=content)
+
+    elif input == "/refresh":
+      pass
+
+    elif input == "/remove":
+      display.removeView()
 
     elif input == "/prev":
       display.prev()
+
+    elif input == "/first":
+      display.first()
+
+    elif input == "/last":
+      display.last()
       
     elif input == "/clear":
       display.clear()
     
     else:
-      display.contentwin.println(input)
+      display.write(input)
 
 
 if __name__ == '__main__':

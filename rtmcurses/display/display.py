@@ -4,16 +4,21 @@
 # the terms of the BSD license
 
 import curses
-from collections import namedtuple
 
 from titleline import TitleLine
 from contentwindow import ContentWindow
 from statusline import StatusLine
 from inputline import InputLine
-
+from errors import *
 from rtmcurses import configuration
 
-View = namedtuple('View', 'x, y, buffer')
+
+class View(object):
+  def __init__(self, x, y, buffer=""):
+    self.x = x
+    self.y = y
+    self.cursor = self.y
+    self.buffer = buffer
 
 """
 Display controller of RTM-ncurses
@@ -26,24 +31,27 @@ class Display(object):
     
     # views
     self.views       = {
-      'default': View(0, 0, "Window 0\n default"),
+      'default': View(0, 0, ""),
     }
-    self.positions   = ['default']
-    self.curr_viewid = 0
-    self.nb_views    = 1
+    self.positions   = self.views.keys()
+    self.curr_view   = self.positions[0]
+    self.nb_views    = len(self.views)
     
     # screen variables
-    self.view_h     = curses.LINES-5
-    self.view_width = curses.COLS
-    self.pad_height = configuration.max_view_height
-    self.pad_width  = self.nb_views*self.view_width
+    self.view_h      = curses.LINES-5
+    self.view_width  = curses.COLS
+    self.pad_height  = configuration.max_view_height
+    self.pad_width   = self.nb_views*self.view_width
     
     # curses windows creation
-    self.titleline  = TitleLine()
-    self.contentwin = ContentWindow()
-    self.statusline = StatusLine()
-    self.inputline  = InputLine()
-    self.inputline.set_prefix("channel")
+    self.titleline   = TitleLine()
+    self.contentwin  = ContentWindow()
+    self.statusline  = StatusLine()
+    self.inputline   = InputLine()
+    
+    self.contentwin.fillFromViews(self.views)
+    self.statusline.fillFromViewlist(self.positions)
+    self.inputline.set_prefix(self.curr_view)
     
   
   def init_colors(self):
@@ -57,7 +65,31 @@ class Display(object):
   #
   # view management methods
   #
-  def addView(self, name, buffer="", pos=None):
+  
+  def _getView(self, viewid=None):
+    """returns name of a view
+    if argument 'viewid' is an int, the name of the view at the position is returned
+    if argument is None or omitted, the name of current view is returned
+    if argument is a string, just check if the view exists and return the name
+    """
+    
+    if viewid is None:
+      return self.curr_view
+    elif isinstance(viewid, int):
+      if viewid < len(self.positions):
+        return self.positions[viewid]
+      else:
+        raise UnknownView()
+    elif isinstance(viewid, str):
+      if viewid in self.views:
+        return viewid
+      else:
+        raise UnknownView()
+    else:
+      raise ArgumentError()
+  
+  
+  def addView(self, name, buffer="", pos=None, switch=True):
     """Add a view to the display.
     if pos is none: placed at the end
     """
@@ -76,59 +108,93 @@ class Display(object):
 
     # something cleaner ?
     self.contentwin.fillFromViews(self.views)
+    self.statusline.fillFromViewlist(self.positions)
+    
+    if(switch):
+      self.switchToView(name)
 
 
-  def removeView(self, name):
+  def removeView(self, viewid=None):
     """remove view"""
-    
-    if isinstance(name, str):
-      pass # remove from name
-    elif isinstance(name, int):
-      pass # remove from pos
-    else:
-      raise Exception()
-    
-  def swapViews(self, view1, view2):
-    """swap views"""
-    pass
-  
-  def switchToView(self, view):
-    """switch active view"""
-    if isinstance(view, int):
-      view = self.positions[view]
-      
-    if isinstance(view, str):
-      self.contentwin.refresh(self.views[view].x, self.views[view].y)
-      self.curr_viewid = self.positions.index(view)
-    else:
-      raise Exception()
+    view = self._getView(viewid)
 
+    self.positions.remove(view)
+    self.statusline.fillFromViewlist(self.positions)
+    
+  def swapViews(self, dest_id, origin_id=None):
+    """swap views"""
+    origin = self.positions.index( self._getView(origin_id) )
+    dest   = self.positions.index( self._getView(dest_id) )
+    
+    self.positions[origin], self.positions[dest] = self.positions[dest], self.positions[origin], 
+    self.statusline.fillFromViewlist(self.positions)
+
+  def switchToView(self, viewid):
+    """switch requested view"""
+    view = self._getView(viewid)
+    self.inputline.set_prefix(view)
+    self.contentwin.refresh(self.views[view].x, self.views[view].y)
+    self.curr_view = view
+  
+  
+  def first(self):
+    """Switch to first view"""
+    self.switchToView( 0 )
+    
+  def last(self):
+    """Switch to last view"""
+    self.switchToView( len(self.positions)-1 )
+  
   def next(self):
     """switch to next view: manage contentwin as well as status, etc."""
-    if self.curr_viewid != self.nb_views-1:
-      self.switchToView(self.curr_viewid + 1)
+    current_id = self.positions.index(self.curr_view)
+    if current_id != self.nb_views-1:
+      self.switchToView( current_id + 1 )
     else:
       # already at last view
       pass
 
   def prev(self):
     """switch to previous view"""
-    if self.curr_viewid > 0:
-      self.switchToView(self.curr_viewid - 1)
+    current_id = self.positions.index(self.curr_view)
+    
+    if current_id > 0:
+      self.switchToView( current_id - 1 )
     else:
       pass
   
-  def setName(self, new_name, view=None):
+  def setName(self, new_name, viewid=None):
     """change name of the current views, affects views list as well as prefix on input bar"""
+    view = self._getView(viewid)
+    if not isinstance(new_name, str):
+      raise ArgumentError()
+    
+    if viewid is None:
+      self.curr_view = new_name
+    self.views[new_name] = self.views[view]
+    del self.views[view]
+    self.positions[ self.positions.index(view) ] = new_name
+    self.statusline.fillFromViewlist(self.positions)
     self.inputline.set_prefix(new_name)
     
   #
   # content management methods
   #
-  def clear(self, view=None):
+  def clear(self, viewid=None):
     """clear content in targeted view, current if arg is omitted"""
-    pass
+    view = self._getView(viewid)
+    self.views[view].buffer = ""
+    self.views[view].cursor = 0
+    self.contentwin.fillFromViews(self.views)
     
-  def println(self, content="", view=None):
+  def write(self, content, viewid=None):
     """print content into view, current if arg is omitted"""
-    pass
+    view = self._getView(viewid)
+    ''.join([self.views[view].buffer, content, '\n'])
+    
+    for line in content.split('\n'):
+      self.contentwin.write(self.views[view].cursor, self.views[view].x, line, refresh=False)
+      self.views[view].cursor += 1
+    
+    self.contentwin.refresh(self.views[view].x, self.views[view].y)
+

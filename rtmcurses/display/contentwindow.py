@@ -5,6 +5,8 @@
 
 import curses
 import display
+from errors import *
+
 
 class ContentWindow:
   def __init__(self):
@@ -121,7 +123,7 @@ class ContentWindow:
     
     for v in views.itervalues():
       if not isinstance(v, display.View):
-        raise Exception("invalid argument")
+        raise ArgumentError()
         
       row = v.y
       for line in v.buffer.split('\n'):
@@ -130,13 +132,18 @@ class ContentWindow:
 
     self.refresh()
   
-  def next(self):
-    self._x = self.view_width
-    self.refresh()
-    
-  def prev(self):
-    self._x = 0
-    self.refresh()
+  #~ def next(self):
+    #~ self._x = self.view_width
+    #~ self.refresh()
+    #~ 
+  #~ def prev(self):
+    #~ self._x = 0
+    #~ self.refresh()
+
+  def write(self, y, x, content, refresh=True):
+    self.win.addstr(y, x, content)
+    if refresh:
+      self.refresh()
 
   def println(self, msg=None):
     if msg is not None:

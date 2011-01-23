@@ -16,7 +16,6 @@ class InputLine(object):
   
   # input buffer
   input_buffer = ""
-  
   inputline_prefix = ""
   
   def __init__(self):
