@@ -152,7 +152,8 @@ class Display(object):
       self.switchToView( current_id + 1 )
     else:
       # already at last view
-      pass
+      # @todo add conf.circular condition
+      self.first()
 
   def prev(self):
     """switch to previous view"""
@@ -161,7 +162,8 @@ class Display(object):
     if current_id > 0:
       self.switchToView( current_id - 1 )
     else:
-      pass
+      # @todo add conf.circular condition
+      self.last()
   
   def setName(self, new_name, viewid=None):
     """change name of the current views, affects views list as well as prefix on input bar"""

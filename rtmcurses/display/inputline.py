@@ -18,6 +18,14 @@ class InputLine(object):
   input_buffer = ""
   inputline_prefix = ""
   
+  # characters is in this will be returned to main dispatcher rather
+  # than be pre-processed with inputline's own parser
+  throwable_char = [
+    curses.ascii.DLE,
+    curses.ascii.SO,
+    curses.ascii.TAB,
+  ]
+  
   def __init__(self):
     """
     Create input bar
@@ -72,15 +80,11 @@ class InputLine(object):
       self.input_buffer = ""
       self.clear()
     
-    elif ch == curses.KEY_UP or ch == curses.ascii.DLE:
+    elif ch == curses.KEY_UP:
       self.append("<history>")
-      #self.println(self.history[self._history_index])
-      #self._history_index -= 1
-      
     
-    elif ch == curses.ascii.TAB:
-      # handle tab completion ?
-      self.append("<TAB>")
+    elif ch in self.throwable_char:
+      return ch
       
     elif ch == curses.ascii.NL or ch == curses.KEY_ENTER:
       # buffer and line cleaning done at beginning of listen()

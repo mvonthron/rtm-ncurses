@@ -3,6 +3,7 @@
 import threading
 import time
 import curses.wrapper
+import curses.ascii
 import locale
 import logging
 
@@ -27,6 +28,12 @@ def main(stdscr):
     if input == "/quit":
       display.inputline.stop()
       
+    elif input == "/prev" or input == curses.ascii.DLE:
+      display.prev()
+      
+    elif input == "/next" or input == curses.ascii.SO:
+      display.next()
+      
     elif input.startswith("/rename "):
       display.setName(input[8:])
     
@@ -36,9 +43,6 @@ def main(stdscr):
     #~ elif input.startswith('/'):
       #~ SystemParser.parser(input, display)
       
-    elif input == "/next":
-      display.next()
-  
     elif input.startswith("/add "):
       title = input[5:].split()[0]
       if len(input.split()) > 2:
@@ -53,10 +57,7 @@ def main(stdscr):
 
     elif input == "/remove":
       display.removeView()
-
-    elif input == "/prev":
-      display.prev()
-
+      
     elif input == "/first":
       display.first()
 

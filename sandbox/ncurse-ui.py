@@ -153,8 +153,12 @@ def main(stdscr):
     elif ch == curses.KEY_BACKSPACE or ch == curses.ascii.BS or ch == curses.ascii.DEL:
       inputbar_win.delch(inputbar_win.getyx()[0], inputbar_win.getyx()[1]-1)
       input_buffer = input_buffer[:-1]
-    elif ch == curses.KEY_UP or ch == curses.ascii.DLE:
+    elif ch == curses.KEY_UP:
       inputbar_win.addstr("<KEY_UP>")
+    elif ch == curses.ascii.DLE:
+      inputbar_win.addstr("<DLE>") #CTRL+P
+    elif ch == curses.ascii.SO:
+      inputbar_win.addstr("<SO>") #CTRL+N
     elif ch == curses.ascii.TAB:
       inputbar_win.addstr("<TAB>")
     elif ch == curses.ascii.NAK:  #CTRL+U
