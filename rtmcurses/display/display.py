@@ -192,7 +192,7 @@ class Display(object):
   def write(self, content, viewid=None):
     """print content into view, current if arg is omitted"""
     view = self._getView(viewid)
-    ''.join([self.views[view].buffer, content, '\n'])
+    self.views[view].buffer  = ''.join([self.views[view].buffer, content, '\n'])
     
     for line in content.split('\n'):
       self.contentwin.write(self.views[view].cursor, self.views[view].x, line, refresh=False)

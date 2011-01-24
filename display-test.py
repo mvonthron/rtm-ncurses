@@ -37,8 +37,8 @@ def main(stdscr):
     elif input.startswith("/rename "):
       display.setName(input[8:])
     
-    #elif input.startswith("/move "):
-      #display.swapViews(input.split()[1])
+    elif input.startswith("/move "):
+      display.swapViews(input.split()[1])
     
     #~ elif input.startswith('/'):
       #~ SystemParser.parser(input, display)

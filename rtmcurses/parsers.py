@@ -4,9 +4,13 @@
 # the terms of the BSD license
 
 class Parser(object):
+  def canHandle(input):
+    pass
+  
   def parse(input, display):
     pass
 
 
 class SystemParser(Parser):
-  pass
+  def canHandle(cmd):
+    return cmd.startswith('/')
