@@ -52,8 +52,7 @@ class InputLine(object):
     """main listening routine
     listen to char entered by user with getch()
     """
-    self.input_buffer = ""
-    self.clear()
+    self.win.refresh()
     
     while not self.stopflag:
       time.sleep(0.01)
@@ -87,9 +86,12 @@ class InputLine(object):
       return ch
       
     elif ch == curses.ascii.NL or ch == curses.KEY_ENTER:
-      # buffer and line cleaning done at beginning of listen()
-      self.history.append(self.input_buffer)
-      return self.input_buffer
+      _buff = self.input_buffer
+      self.input_buffer = ""
+      self.clear()      
+      self.history.append(_buff)
+     
+      return _buff
   
   def stop(self):
     self.stopflag = True
@@ -99,7 +101,7 @@ class InputLine(object):
   
   def clear(self):
     self.win.erase()
-    self.win.addstr(self.inputline_prefix)
+    self.win.addstr(self.inputline_prefix + self.input_buffer)
     self.win.refresh()
 
   def append_ch(self, content):
@@ -119,6 +121,8 @@ class InputLine(object):
     self.refresh()
 
   def set_prefix(self, prefix):
-    #if prefix != self.inputline_prefix:
     self.inputline_prefix = "[%s] " % prefix
-    self.win.refresh()
+    self.clear()
+    # restoring input buffer
+    self.win.addstr(self.input_buffer)
+    self.refresh()

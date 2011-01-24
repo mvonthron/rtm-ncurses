@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 
 import os
 import time
@@ -140,6 +142,13 @@ def main(stdscr):
   # main input buffer
   input_buffer = ""
   
+
+  arrow = '➤'
+  light = '⚡'
+
+  content_win.addstr("test :"+arrow+": test")
+  content_win.refresh()
+
   while True:
     # move to own thread
     time.sleep(0.01)
