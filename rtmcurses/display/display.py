@@ -64,8 +64,8 @@ class Display(object):
       "yellow": 3,
       "red":    4,
       "green":  5,
-      "green":  6,
-      "green":  7,
+      "cyan":  6,
+      "magenta":  7,
     }
     
     curses.init_pair(1, curses.COLOR_WHITE, -1)
