@@ -21,7 +21,7 @@ def main(stdscr):
   
   #display.contentwin.writetask()
   #display.contentwin.writetask2()
-  
+
   while not display.inputline.stopflag:
     input = display.inputline.listen()
     
@@ -39,6 +39,12 @@ def main(stdscr):
     
     elif input.startswith("/move "):
       display.swapViews(input.split()[1])
+
+    elif input.startswith("/color "):
+      display.set_color(input.split()[1])
+    
+    elif input.startswith("/status "):
+      display.statusline.set_status(input.split()[1])
     
     #~ elif input.startswith('/'):
       #~ SystemParser.parser(input, display)

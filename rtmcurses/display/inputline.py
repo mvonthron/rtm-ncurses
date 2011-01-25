@@ -124,5 +124,5 @@ class InputLine(object):
     self.inputline_prefix = "[%s] " % prefix
     self.clear()
     # restoring input buffer
-    self.win.addstr(self.input_buffer)
+    #  self.win.addstr(self.input_buffer)
     self.refresh()

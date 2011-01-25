@@ -12,6 +12,8 @@ from inputline import InputLine
 from errors import *
 from rtmcurses import configuration
 
+import logging
+
 
 class View(object):
   def __init__(self, x, y, buffer=""):
@@ -38,7 +40,7 @@ class Display(object):
     self.nb_views    = len(self.views)
     
     # screen variables
-    self.view_h      = curses.LINES-5
+    # self.view_h      = curses.LINES-5
     self.view_width  = curses.COLS
     self.pad_height  = configuration.max_view_height
     self.pad_width   = self.nb_views*self.view_width
@@ -58,14 +60,25 @@ class Display(object):
     curses.start_color()
     curses.use_default_colors()
     
+    self.colorslist = {
+      "yellow": 3,
+      "red":    4,
+      "green":  5,
+      "green":  6,
+      "green":  7,
+    }
+    
     curses.init_pair(1, curses.COLOR_WHITE, -1)
     curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_BLUE)
-
+    curses.init_pair(3, curses.COLOR_YELLOW, curses.COLOR_BLUE)
+    curses.init_pair(4, curses.COLOR_RED, curses.COLOR_BLUE)
+    curses.init_pair(5, curses.COLOR_GREEN, curses.COLOR_BLUE)
+    curses.init_pair(6, curses.COLOR_CYAN, curses.COLOR_BLUE)
+    curses.init_pair(7, curses.COLOR_MAGENTA, curses.COLOR_BLUE)
 
   #
   # view management methods
   #
-  
   def _getView(self, viewid=None):
     """returns name of a view
     if argument 'viewid' is an int, the name of the view at the position is returned
@@ -200,3 +213,8 @@ class Display(object):
     
     self.contentwin.refresh(self.views[view].x, self.views[view].y)
 
+  # others
+  def set_color(self, color):
+    view = self._getView(None)
+    if color in self.colorslist:
+      self.statusline.set_color(view, curses.color_pair(self.colorslist[color]))

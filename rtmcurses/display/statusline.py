@@ -19,17 +19,35 @@ class StatusLine:
     self.win.bkgdset(ord(' '), curses.color_pair(2))
     self.win.insertln()
     
-    self.status = "sleeping"
+    self.status   = "sleeping"
+    self.viewlist = []
+    self.colors   = {}
   
     self.refresh()
 
   def refresh(self):
-    self.win.refresh()
-
-  def fillFromViewlist(self, viewlist):
     self.win.erase()
     
-    self.win.addstr("(%s) " % self.status)
-    self.win.addstr(' '.join(["[%d] %s" % (i, name) for i, name in enumerate(viewlist)]))
+    self.win.addstr("(%s)" % self.status)
+    for i, name in enumerate(self.viewlist):
+      if name in self.colors:
+        self.win.addstr(" [%d] %s" % (i, name), self.colors[name])
+      else:
+        self.win.addstr(" [%d] %s" % (i, name))
+    
+    self.win.refresh()
+
+  def set_color(self, view, color):
+    self.colors[view] = color
+    self.refresh()
+
+  def set_status(self, status):
+    if status != self.status:
+      self.status = status
+      self.refresh()
+
+  def fillFromViewlist(self, viewlist=None):
+    if not viewlist is None:
+      self.viewlist = viewlist
 
     self.refresh()
