@@ -61,11 +61,11 @@ class Display(object):
     curses.use_default_colors()
     
     self.colorslist = {
-      "yellow": 3,
-      "red":    4,
-      "green":  5,
-      "cyan":  6,
-      "magenta":  7,
+      "yellow":  3,
+      "red":     4,
+      "green":   5,
+      "cyan":    6,
+      "magenta": 7,
     }
     
     curses.init_pair(1, curses.COLOR_WHITE, -1)
