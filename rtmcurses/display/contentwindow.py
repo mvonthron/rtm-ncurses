@@ -9,16 +9,16 @@ from errors import *
 
 
 class ContentWindow:
-  def __init__(self):
+  def __init__(self, lines, cols):
     self._x = 0
     self._y = 0
     
-    self.view_height = curses.LINES-5
-    self.view_width  = curses.COLS
-    self.pad_height  = curses.LINES-5
-    self.pad_width   = curses.COLS
+    self.view_height = lines-5
+    self.view_width  = cols
+    self.pad_height  = lines-5
+    self.pad_width   = cols
     
-    self.win = curses.newpad(self.pad_height, self.pad_width)
+    self.win = curses.newpad(lines, cols)
     
     self.win.bkgdset(ord(' '), curses.color_pair(1))
     self.win.insertln()
@@ -131,14 +131,6 @@ class ContentWindow:
         row += 1
 
     self.refresh()
-  
-  #~ def next(self):
-    #~ self._x = self.view_width
-    #~ self.refresh()
-    #~ 
-  #~ def prev(self):
-    #~ self._x = 0
-    #~ self.refresh()
 
   def write(self, y, x, content, refresh=True):
     self.win.addstr(y, x, content)

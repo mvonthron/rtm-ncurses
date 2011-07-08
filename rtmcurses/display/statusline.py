@@ -8,13 +8,13 @@ import curses
 
 class StatusLine:
   
-  def __init__(self):
+  def __init__(self, lines, cols, y, x):
     """
     Create status bar
 
     The status bar lists available channels
     """
-    self.win = curses.newwin(1, curses.COLS, curses.LINES-2, 0)
+    self.win = curses.newwin(lines, cols, y, x)
 
     self.win.bkgdset(ord(' '), curses.color_pair(2))
     self.win.insertln()

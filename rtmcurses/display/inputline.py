@@ -24,9 +24,10 @@ class InputLine(object):
     curses.ascii.DLE,
     curses.ascii.SO,
     curses.ascii.TAB,
+    curses.KEY_RESIZE,
   ]
   
-  def __init__(self):
+  def __init__(self, lines, cols, y, x):
     """
     Create input bar
     """
@@ -34,8 +35,11 @@ class InputLine(object):
     self.history = deque(maxlen=MAX_HISTORY_SIZE)
     self._history_index = MAX_HISTORY_SIZE-1
     
-    # win
-    self.win = curses.newwin(1, curses.COLS, curses.LINES-1, 0)
+    self._clear_draw(lines, cols, y, x)
+
+
+  def _clear_draw(self, lines, cols, y, x):
+    self.win = curses.newwin(lines, cols, y, x)
     
     self.win.bkgdset(ord(' '), curses.color_pair(1))
     self.win.insertln()
@@ -46,7 +50,6 @@ class InputLine(object):
     
     curses.curs_set(1)
     self.win.refresh()
-
 
   def listen(self):
     """main listening routine

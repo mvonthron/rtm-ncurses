@@ -29,6 +29,8 @@ class Display(object):
   
   def __init__(self, stdscr):
     self._stdscr = stdscr
+    #self.lines, self.cols = self._stdscr.getmaxyx()
+    
     self.init_colors()
     
     # views
@@ -41,19 +43,38 @@ class Display(object):
     
     # screen variables
     # self.view_h      = curses.LINES-5
-    self.view_width  = curses.COLS
+    #~ self.view_width  = curses.COLS
+    #~ self.pad_height  = configuration.max_view_height
+    #~ self.pad_width   = self.nb_views*self.view_width
+    #~ 
+    #~ # curses windows creation
+    #~ self.titleline   = TitleLine()
+    #~ self.contentwin  = ContentWindow()
+    #~ self.statusline  = StatusLine()
+    #~ self.inputline   = InputLine()
+    #~ 
+    #~ self.contentwin.fillFromViews(self.views)
+    #~ self.statusline.fillFromViewlist(self.positions)
+    #~ self.inputline.set_prefix(self.curr_view)
+    
+    self._clear_draw()
+    
+  def _clear_draw(self):
+    self.lines, self.cols = self._stdscr.getmaxyx()
+    self.view_width  = self.cols
     self.pad_height  = configuration.max_view_height
     self.pad_width   = self.nb_views*self.view_width
     
     # curses windows creation
-    self.titleline   = TitleLine()
-    self.contentwin  = ContentWindow()
-    self.statusline  = StatusLine()
-    self.inputline   = InputLine()
+    self.titleline   = TitleLine(1, self.cols, 0, 0)
+    self.contentwin  = ContentWindow(self.lines-5, self.cols)
+    self.statusline  = StatusLine(1, self.cols, self.lines-2, 0)
+    self.inputline   = InputLine(1, self.cols, self.lines-1, 0)
     
     self.contentwin.fillFromViews(self.views)
     self.statusline.fillFromViewlist(self.positions)
     self.inputline.set_prefix(self.curr_view)
+    
     
   
   def init_colors(self):
@@ -76,6 +97,22 @@ class Display(object):
     curses.init_pair(6, curses.COLOR_CYAN, curses.COLOR_BLUE)
     curses.init_pair(7, curses.COLOR_MAGENTA, curses.COLOR_BLUE)
 
+
+  def resize(self, signum=None, frame=None):
+    try:
+      curses.endwin()
+    except:
+      pass
+    
+    self._stdscr = curses.initscr()
+    self._clear_draw()
+    #self.titleline.resize()
+    #self.inputline.refresh()
+    #self.statusline.refresh()
+    #self.contentwin.refresh()
+    
+    self.write("RESIZING [%d, %d]" % self._stdscr.getmaxyx())
+    
   #
   # view management methods
   #

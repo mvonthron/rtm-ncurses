@@ -2,6 +2,7 @@
 
 import threading
 import time
+import signal
 import curses.wrapper
 import curses.ascii
 import locale
@@ -18,7 +19,8 @@ def main(stdscr):
   code = locale.getpreferredencoding()
   
   display = Display(stdscr)
-  
+
+  signal.signal(signal.SIGWINCH, display.resize)  
   systemParser = SystemParser(display)
   keyParser    = KeyboardShortcutParser(display)
   
