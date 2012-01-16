@@ -29,12 +29,11 @@ def main(stdscr):
 
   while not display.inputline.stopflag:
     input = display.inputline.listen()
-    
 
     if keyParser.canHandle(input):
-        input = keyParser.handle(input)
+      input = keyParser.handle(input)
     
-    if input.startswith("/"):
+    if systemParser.canHandle(input):
       systemParser.handle(input)
 
     else:

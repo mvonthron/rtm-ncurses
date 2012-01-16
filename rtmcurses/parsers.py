@@ -9,7 +9,7 @@ class Parser(object):
   def __init__(self, display):
     self._display = display
 
-  def canHandle(input):
+  def canHandle(self, input):
     pass
   
   def help(self):
@@ -20,7 +20,7 @@ class Parser(object):
 
 
 class SystemParser(Parser):
-  def canHandle(input):
+  def canHandle(self, input):
     return input.startswith('/')
    
   def handle(self, input):
