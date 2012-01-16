@@ -1,0 +1,56 @@
+.. -*- restructuredtext -*-
+
+RtmAPI
+======
+
+This is an API package for
+`Remember the Milk <http://www.rememberthemilk.com>`_. Using their
+API and this package you can create Python applications accessing
+your task lists on RTM.
+
+See the example script (in the ``examples`` folder) for basic
+usage. You should have read the essential API docs on their website
+before.
+
+RtmAPI details
+--------------
+
+It's important that you understand the example script to understand
+how to use *RtmAPI*. It shows desktop authorization and a basic
+list operation.
+
+Authentication
+~~~~~~~~~~~~~~
+
+See
+http://www.rememberthemilk.com/services/api/authentication.rtm.
+
+User authentication for desktop applications can be done using the
+``authenticate_desktop`` and ``retrieve_token`` methods, whereas
+web applications should use the ``authenticate_web`` and
+``retrieve_token`` methods.
+
+API call return values
+~~~~~~~~~~~~~~~~~~~~~~
+
+If you call an API method, it returns the XML wrapped in special
+objects. Those object should make it easy to use the API:
+
+Each object has a ``value`` property which returns the XML text.
+All other values return either the contents of the XML attribute
+with the same name if that exists, or an (again wrapped) child
+element with the name.
+
+Some API methods return multiple child elements of the same kind,
+ie. XML children with the same tag. Those lists are handled in
+*RtmAPI*, ie. you can iterate over those child elements easily. The
+example script show the usage of ``rtm.tasks.getList``. Compare the
+example script with the ``rtm.tasks.getList`` documentation to
+understand how lists work.
+
+Contributors
+~~~~~~~~~~~~
+
+* Michael Gruenewald
+* Marcin Kasperski
+
