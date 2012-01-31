@@ -68,7 +68,8 @@ class Display(object):
     # curses windows creation
     self.titleline   = TitleLine(1, self.cols, 0, 0)
     self.contentwin  = ContentWindow(self.lines-5, self.cols)
-    self.statusline  = StatusLine(1, self.cols, self.lines-2, 0)
+    #~ self.statusline  = StatusLine(1, self.cols, self.lines-2, 0)
+    self.statusline  = StatusLine(self.lines, self.cols)
     self.inputline   = InputLine(1, self.cols, self.lines-1, 0)
     
     self.contentwin.fillFromViews(self.views)

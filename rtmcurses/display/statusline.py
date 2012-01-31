@@ -8,32 +8,56 @@ import curses
 
 class StatusLine:
   
-  def __init__(self, lines, cols, y, x):
+  def __init__(self, disp_lines, disp_cols): # lines, cols, y, x):
     """
     Create status bar
 
     The status bar lists available channels
     """
-    self.win = curses.newwin(lines, cols, y, x)
-
-    self.win.bkgdset(ord(' '), curses.color_pair(2))
-    self.win.insertln()
     
     self.status   = "sleeping"
     self.viewlist = []
     self.colors   = {}
-  
+    
+    self.disp_lines = disp_lines
+    self.lines  = 1
+    self.cols   = disp_cols
+    self.y = disp_lines - (self.lines+1)
+    self.x = 0
+    
+    self.win = curses.newwin(self.lines, self.cols, self.y, self.x)
+
+    self.win.bkgdset(ord(' '), curses.color_pair(2))
+    self.win.insertln()
+    
+    
     self.refresh()
 
   def refresh(self):
     self.win.erase()
     
-    self.win.addstr("(%s)" % self.status)
+    content = "(%s)" % self.status
     for i, name in enumerate(self.viewlist):
       if name in self.colors:
-        self.win.addstr(" [%d] %s" % (i, name), self.colors[name])
+        content += " [%d] %s" % (i, name), self.colors[name]
       else:
-        self.win.addstr(" [%d] %s" % (i, name))
+        content += " [%d] %s" % (i, name)
+    
+    
+    self.lines = (len(content)/self.cols) + 1
+    self.y = self.disp_lines - (self.lines+1)
+    self.win.mvwin(self.y, self.x)
+    self.win.resize(self.lines, self.cols)
+    
+    
+    #~ self.win.addstr("(%s)" % self.status)
+    #~ for i, name in enumerate(self.viewlist):
+      #~ if name in self.colors:
+        #~ self.win.addstr(" [%d] %s" % (i, name), self.colors[name])
+      #~ else:
+        #~ self.win.addstr(" [%d] %s" % (i, name))
+    
+    self.win.addstr(content)
     
     self.win.refresh()
 

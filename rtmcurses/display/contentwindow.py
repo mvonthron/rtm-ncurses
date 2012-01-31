@@ -86,7 +86,7 @@ class ContentWindow:
   def writetask2(self):
     """test composite drawing of task"""
     title = "This is another task title"
-    description = "I love mon amoureuse\n c'est la meilleure amoureuse de la planete du monde entier"
+    description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sollicitudin lectus ac."
     date = "today, from 12:00 to 14:00"
     _x = self.view_width+1
     _y = 1
