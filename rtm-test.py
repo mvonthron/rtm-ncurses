@@ -34,7 +34,15 @@ def main(stdscr):
 
     if not api.token_valid():
         # manage token retrieval
-        return
+        url, frob = api.authenticate_desktop()
+        # open webbrowser, wait until user authorized application
+        webbrowser.open(url)
+        raw_input("Continue?")
+        # get the token for the frob
+        api.retrieve_token(frob)
+        # print out new token, should be used to initialize the Rtm object next time
+        # (a real application should store the token somewhere)
+        print "New token: %s" % api.token
     
     display.statusline.set_status("fetching lists")
     result = api.rtm.lists.getList()
@@ -46,6 +54,9 @@ def main(stdscr):
     display.removeView(0)
     display.first()
     
+    for i in range(15):
+        display.addView("testlen %d" % i)
+
     while not display.inputline.stopflag:
         input = display.inputline.listen()
 
