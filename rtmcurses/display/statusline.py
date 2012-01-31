@@ -36,28 +36,28 @@ class StatusLine:
   def refresh(self):
     self.win.erase()
     
-    content = "(%s)" % self.status
-    for i, name in enumerate(self.viewlist):
-      if name in self.colors:
-        content += " [%d] %s" % (i, name), self.colors[name]
-      else:
-        content += " [%d] %s" % (i, name)
-    
+    content = "(%s) " % self.status
+    content += ' '.join("[%d] %s" % (i, name) for i, name in enumerate(self.viewlist))    
     
     self.lines = (len(content)/self.cols) + 1
     self.y = self.disp_lines - (self.lines+1)
     self.win.mvwin(self.y, self.x)
     self.win.resize(self.lines, self.cols)
     
-    
-    #~ self.win.addstr("(%s)" % self.status)
-    #~ for i, name in enumerate(self.viewlist):
-      #~ if name in self.colors:
-        #~ self.win.addstr(" [%d] %s" % (i, name), self.colors[name])
-      #~ else:
-        #~ self.win.addstr(" [%d] %s" % (i, name))
-    
-    self.win.addstr(content)
+    # we cannot reuse `content` since it doesn't handle colors
+    self.win.addstr("(%s)" % self.status)
+    current_len = len(self.status)+2
+    for i, name in enumerate(self.viewlist):
+      # keeping track of length already written so that we don't split a name
+      current_len += len(" [%d] %s" % (i, name))
+      if current_len < self.cols:
+        if name in self.colors:
+          self.win.addstr(" [%d] %s" % (i, name), self.colors[name])
+        else:
+          self.win.addstr(" [%d] %s" % (i, name))
+      else:
+        self.win.addstr("\n")
+        current_len = 0
     
     self.win.refresh()
 
